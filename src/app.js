@@ -4,9 +4,9 @@ const app = express();
 
 app.use("/admin", adminAuth);
 
-app.get("/admin", (req, res, next) => {
+app.get("/admin/getAllUserData", (req, res, next) => {
   console.log(req);
-  res.send("admin validated successfully");
+  res.send("all user data accessed");
 });
 
 app.get("/user", userAuth, (req, res) => {
