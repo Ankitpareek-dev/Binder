@@ -20,4 +20,11 @@ app.get("/", (req, res) => {
   res.send("Hello from the home page");
 });
 
+app.get("/", (err, req, res, next) => {
+  if (err) {
+    console.error(err);
+    res.status(500).send("something went wrong");
+    return;
+  }
+});
 app.listen(3000, () => {});
