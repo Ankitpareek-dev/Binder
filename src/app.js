@@ -5,22 +5,21 @@ const app = express();
 const User = require("./models/user");
 const connectDB = require("./config/database");
 
-app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Ankit",
-    lastName: "Pareek",
-    emailId: "ankit@pareek.com",
-    password: "xyz",
-    age: 12,
-    gender: "male",
-  });
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
-  // error handling
+app.post("/signup", async (req, res) => {
+  // Extracting user data from request body
+  const user = new User(req.body);
+
+  console.log(user.firstName);
+
+  // saving user info with error handling
   try {
     await user.save();
     res.send("User created successfully");
   } catch (err) {
-    console.error("Error saving user:", error);
+    console.error("Error saving user:", err);
     return res.status(500).send("Error creating user");
   }
 });

@@ -1,3 +1,5 @@
+//database connection logic using Mongoose.
+
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
