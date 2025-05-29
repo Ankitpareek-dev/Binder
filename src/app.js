@@ -5,6 +5,7 @@ const app = express();
 const User = require("./models/user");
 const connectDB = require("./config/database");
 const { model } = require("mongoose");
+const user = require("./models/user");
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -45,6 +46,19 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+//patch api to change user details
+app.patch("/user", async (req, res) => {
+  const id = req.body.id;
+  const data = req.body;
+  console.log(data);
+  try {
+    await user.findByIdAndUpdate(id, data);
+    res.send("User updated successfully");
+  } catch (err) {
+    console.error("Error updating user:", err);
+    return res.status(500).send("Error updating user");
+  }
+});
 connectDB()
   .then(() => {
     console.log("database connected successfully");
