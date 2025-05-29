@@ -50,9 +50,23 @@ app.post("/signup", async (req, res) => {
 app.patch("/user", async (req, res) => {
   const id = req.body.id;
   const data = req.body;
-  console.log(data);
+
+  if (req.body.skills > 10) {
+    return res.status(400).send("Skills array cannot exceed 10 items");
+  }
+
+  const allowedUpdates = ["photoUrl", "about", "gender", "age"];
+  const isUpdateALlowed = Object.keys(data).every((key) =>
+    allowedUpdates.includes(key)
+  );
+  if (!isUpdateALlowed) {
+    return res.status(400).send("Invalid update fields");
+  }
   try {
-    await user.findByIdAndUpdate(id, data);
+    await user.findByIdAndUpdate(id, data, {
+      runValidators: true, // Validate the update against the schema
+    });
+
     res.send("User updated successfully");
   } catch (err) {
     console.error("Error updating user:", err);
