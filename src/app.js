@@ -1,6 +1,7 @@
 const express = require("express");
 const { adminAuth, userAuth } = require("./middlewares/auth");
 const app = express();
+const { hashPassword } = require("./utils/passHashing");
 const bcrypt = require("bcrypt");
 
 const User = require("./models/user");
@@ -34,7 +35,8 @@ app.post("/signup", async (req, res) => {
   // Extracting user data from request body
   const user = new User(req.body);
 
-  console.log(user.firstName);
+  // Hashing the password before saving
+  user.password = await hashPassword(user.password);
 
   // saving user info with error handling
   try {
@@ -50,11 +52,16 @@ app.post("/signup", async (req, res) => {
 app.post("/signin", async (req, res) => {
   const { emailId, password } = req.body;
 
-  const user = await model("User").findOne({ emailId, password });
-  if (!user) {
-    return res.status(401).send("Invalid email or password");
-  }
-  res.send("User signed in successfully");
+  const user = await model("User").findOne({ emailId });
+  console.log(password);
+  console.log(user.password);
+  bcrypt.compare(password, user.password).then(function (result) {
+    if (result) {
+      res.send("User signed in successfully");
+    } else {
+      res.status(401).send("Invalid email or password");
+    }
+  });
 });
 //patch api to change user details
 app.patch("/user/:userId", async (req, res) => {
