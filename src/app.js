@@ -9,6 +9,7 @@ const User = require("./models/user");
 const connectDB = require("./config/database");
 const { model } = require("mongoose");
 const jwt = require("jsonwebtoken");
+const { userAuth } = require("./middlewares/auth");
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -76,7 +77,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
     const cookies = req.cookies;
     const { token } = cookies;
