@@ -3,13 +3,16 @@ const { adminAuth, userAuth } = require("./middlewares/auth");
 const app = express();
 const { hashPassword } = require("./utils/passHashing");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 const User = require("./models/user");
 const connectDB = require("./config/database");
 const { model } = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+app.use(cookieParser());
 
 // GET api to fetch all users
 app.get("/feed", async (req, res) => {
@@ -49,24 +52,51 @@ app.post("/signup", async (req, res) => {
 });
 
 //post api to sign in a user
-app.post("/signin", async (req, res) => {
-  const { emailId, password } = req.body;
-
-  const user = await model("User").findOne({ emailId });
-  console.log(password);
-  console.log(user.password);
-  bcrypt.compare(password, user.password).then(function (result) {
-    if (result) {
-      res.send("User signed in successfully");
-    } else {
-      res.status(401).send("Invalid email or password");
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await model("User").findOne({ emailId });
+    if (!user) {
+      throw new Error("User not found");
     }
-  });
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      // Creating a JWT Token
+      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$790");
+      // Setting the token in cookies
+      res.cookie("token", token);
+      res.send("Login successful");
+    } else {
+      throw new Error("Invalid Credentials");
+    }
+  } catch (err) {
+    console.error("Error during login:", err);
+    return res.status(500).send("Error during login");
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    const { token } = cookies;
+    if (!token) {
+      throw new Error("No user found");
+    }
+
+    const decodedMessage = jwt.verify(token, "DEV@Tinder$790");
+    const user = await User.findById(decodedMessage._id);
+    console.log(user);
+    res.send("welcome " + user.firstName);
+  } catch (err) {
+    return res.status(500).send("Error fetching profile");
+  }
 });
 //patch api to change user details
 app.patch("/user/:userId", async (req, res) => {
   const userId = req.params.userId;
   const data = req.body;
+
   console.log(data);
   if (req.body.skills > 10) {
     return res.status(400).send("Skills array cannot exceed 10 items");
