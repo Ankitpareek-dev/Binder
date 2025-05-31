@@ -1,5 +1,5 @@
 const express = require("express");
-const { adminAuth, userAuth } = require("./middlewares/auth");
+const { userAuth } = require("./middlewares/auth");
 const app = express();
 const { hashPassword } = require("./utils/passHashing");
 const bcrypt = require("bcrypt");
@@ -9,7 +9,7 @@ const User = require("./models/user");
 const connectDB = require("./config/database");
 const { model } = require("mongoose");
 const jwt = require("jsonwebtoken");
-const { userAuth } = require("./middlewares/auth");
+// const { userAuth } = require("./middlewares/auth");
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -64,7 +64,9 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
       // Creating a JWT Token
-      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$790");
+      const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$790", {
+        expiresIn: "1d ",
+      });
       // Setting the token in cookies
       res.cookie("token", token);
       res.send("Login successful");
@@ -79,15 +81,7 @@ app.post("/login", async (req, res) => {
 
 app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const { token } = cookies;
-    if (!token) {
-      throw new Error("No user found");
-    }
-
-    const decodedMessage = jwt.verify(token, "DEV@Tinder$790");
-    const user = await User.findById(decodedMessage._id);
-    console.log(user);
+    const user = req.user; // The user is set in the userAuth middleware
     res.send("welcome " + user.firstName);
   } catch (err) {
     return res.status(500).send("Error fetching profile");

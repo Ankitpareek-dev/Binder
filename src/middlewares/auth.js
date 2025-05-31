@@ -24,15 +24,14 @@ const userAuth = async (req, res, next) => {
     if (!user) {
       throw new Error("User not found");
     }
+    req.user = user;
     next();
   } catch (err) {
-    c;
     return res.status(400).send("Unauthorized access");
   }
 };
 
 module.exports = {
-  adminAuth,
   userAuth,
 };
 // This code defines two middleware functions for authentication in an Express.js application.
