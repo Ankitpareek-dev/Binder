@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { hashPassword } = require("./utils/passHashing");
+
 const cookieParser = require("cookie-parser");
 const User = require("./models/user");
 const connectDB = require("./config/database");
@@ -14,7 +14,7 @@ app.use(cookieParser());
 
 const authRouter = require("./Routes/auth");
 const profileRouter = require("./Routes/profile");
-const requestRouter = require("./Routes/resquest");
+const requestRouter = require("./Routes/request");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);

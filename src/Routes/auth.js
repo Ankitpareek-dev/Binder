@@ -3,6 +3,8 @@ const authRouter = express.Router();
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { hashPassword } = require("../utils/passHashing");
+const { model } = require("mongoose");
 
 // POST api to create a new user
 authRouter.post("/signup", async (req, res) => {
@@ -35,7 +37,7 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       // Creating a JWT Token
       const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$790", {
-        expiresIn: "1d  ",
+        expiresIn: "1d",
       });
       // Setting the token in cookies
       res.cookie("token", token);
