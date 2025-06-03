@@ -48,7 +48,7 @@ const userSchema = mongoose.Schema(
       type: String,
       default: "https://www.w3schools.com/howto/img_avatar.png",
     },
-    bio: {
+    about: {
       type: String,
       default: "This is a default bio",
       maxlength: 100,
