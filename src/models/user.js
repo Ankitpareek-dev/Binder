@@ -18,6 +18,7 @@ const userSchema = mongoose.Schema(
     emailId: {
       type: String,
       required: true,
+      unique: true,
       // unique: true,
       validate(value) {
         if (!validator.isEmail(value)) {
@@ -64,4 +65,5 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.index({ firstName, lastName });
 module.exports = mongoose.model("User", userSchema);
