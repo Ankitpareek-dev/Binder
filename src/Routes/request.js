@@ -12,12 +12,27 @@ requestRouter.post(
     const fromUserId = user._id;
 
     try {
+      // checking if request already exists
       const existingRequest = await ConnectionRequestModel.findOne({
-        fromUserId,
-        toUserId,
+        $or: [
+          {
+            fromUserId,
+            toUserId,
+          },
+          {
+            fromUserId: toUserId,
+            toUserId: fromUserId,
+          },
+        ],
       });
       if (existingRequest) {
         return res.status(400).json({ message: "Request already sent" });
+      }
+      // checking if user is trying to send request to themselves
+      if (fromUserId.toString() === toUserId.toString()) {
+        return res
+          .status(400)
+          .json({ message: "You cannot send a request to yourself" });
       }
       const newRequest = new ConnectionRequestModel({
         fromUserId,
