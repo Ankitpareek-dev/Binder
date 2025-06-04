@@ -28,6 +28,11 @@ requestRouter.post(
       if (existingRequest) {
         return res.status(400).json({ message: "Request already sent" });
       }
+      //cheacking if the toUserId exists
+      const toUser = await ConnectionRequestModel.findById(toUserId);
+      if (!toUser) {
+        res.send("User not found");
+      }
       // checking if user is trying to send request to themselves
       if (fromUserId.toString() === toUserId.toString()) {
         return res
