@@ -2,6 +2,7 @@ const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const userRouter = express.Router();
 const connectionRequestModel = require("../models/connectionRequest");
+const UserModel = require("../models/user");
 
 const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
 
@@ -49,6 +50,35 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     console.log(data);
 
     res.json({ data });
+  } catch (error) {
+    res.status(400).json({ message: "Internal server error" });
+  }
+});
+
+userRouter.get("/user/feed", userAuth, async (req, res) => {
+  try {
+    const loggedInUser = req.user;
+    const connectionRequests = await connectionRequestModel
+      .find({
+        $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
+      })
+      .select("fromUserId toUserId ");
+
+    const hideUsersFromFeed = new Set();
+    connectionRequests.forEach((req) => {
+      hideUsersFromFeed.add(req.fromUserId.toString());
+      hideUsersFromFeed.add(req.toUserId.toString());
+    });
+
+    const allowedUsers = await UserModel.find({
+      $and: [
+        { _id: { $nin: Array.from(hideUsersFromFeed) } },
+        { _id: { $ne: loggedInUser._id } },
+      ],
+    }).select(USER_SAFE_DATA);
+
+    // console.log(hideUsersFromFeed);
+    res.send(allowedUsers);
   } catch (error) {
     res.status(400).json({ message: "Internal server error" });
   }
