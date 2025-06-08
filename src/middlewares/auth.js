@@ -1,13 +1,3 @@
-// const adminAuth = (req, res, next) => {
-//   const token = "xyz";
-//   const validToken = token === "xyz";
-//   if (validToken) {
-//     next();
-//   } else {
-//     res.status(401).send("Unauthorized");
-//   }
-// };
-
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const userAuth = async (req, res, next) => {
