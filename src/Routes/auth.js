@@ -41,7 +41,23 @@ authRouter.post("/login", async (req, res) => {
       });
       // Setting the token in cookies
       res.cookie("token", token);
-      res.send("Login successful");
+      res.send({
+        message: "Login successful",
+        user: {
+          _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          emailId: user.emailId,
+          age: user.age,
+          gender: user.gender,
+          photoId: user.photoId,
+          about: user.about,
+          skills: user.skills,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        },
+        token,
+      });
     } else {
       throw new Error("Invalid Credentials");
     }
