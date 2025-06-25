@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user; // The user is set in the userAuth middleware
-    res.send("welcome " + user.firstName);
+    res.send(user);
   } catch (err) {
     return res.status(500).send("Error fetching profile");
   }
