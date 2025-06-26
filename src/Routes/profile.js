@@ -4,6 +4,7 @@ const { userAuth } = require("../middlewares/auth");
 const { validateEditProfileData } = require("../utils/validate");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const user = require("../models/user");
 
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
@@ -22,7 +23,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     const loggedInUser = req.user;
     const updateData = req.body;
     await User.findByIdAndUpdate(loggedInUser._id, updateData);
-    res.send("edit successful"); // The user is set in the userAuth middleware
+    res.send(loggedInUser); // The user is set in the userAuth middleware
   } catch (err) {
     return res.status(500).send("Error updating profile");
   }

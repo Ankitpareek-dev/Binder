@@ -30,7 +30,7 @@ authRouter.post("/login", async (req, res) => {
     const { emailId, password } = req.body;
     const user = await model("User").findOne({ emailId });
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("Invalid Credentials");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -62,8 +62,7 @@ authRouter.post("/login", async (req, res) => {
       throw new Error("Invalid Credentials");
     }
   } catch (err) {
-    console.error("Error during login:", err);
-    return res.status(500).send("Error during login");
+    return res.status(400).send(err.message);
   }
 });
 
