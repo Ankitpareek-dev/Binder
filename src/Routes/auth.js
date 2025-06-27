@@ -40,6 +40,7 @@ authRouter.post("/login", async (req, res) => {
         expiresIn: "1d",
       });
       // Setting the token in cookies
+      const isProd = process.env.NODE_ENV === "production";
       res.cookie("token", token, {
         httpOnly: true, // can't be accessed from JS
         secure: isProd, // true if on HTTPS (Render), false for localhost
