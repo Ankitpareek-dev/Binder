@@ -14,7 +14,7 @@ const cors = require("cors");
 app.use(express.json());
 app.use(
   cors({
-    origin: "https://binder-web.vercel.app/", // Adjust this to your frontend URL
+    origin: "https://binder-web.vercel.app", // Adjust this to your frontend URL
     credentials: true, // Allow cookies to be sent with requests
   })
 );
