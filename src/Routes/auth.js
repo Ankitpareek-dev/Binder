@@ -40,7 +40,12 @@ authRouter.post("/login", async (req, res) => {
         expiresIn: "1d",
       });
       // Setting the token in cookies
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        httpOnly: true, // can't be accessed from JS
+        secure: isProd, // true if on HTTPS (Render), false for localhost
+        sameSite: "none", // allow cross-site cookie setting
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      });
       res.send({
         message: "Login successful",
         user: {
