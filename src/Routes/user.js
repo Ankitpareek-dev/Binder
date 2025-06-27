@@ -15,7 +15,10 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
         status: "interested",
       })
       .populate("fromUserId", USER_SAFE_DATA);
-    const data = connectionRequests.map((row) => row.fromUserId);
+    const data = connectionRequests.map((row) => ({
+      requestId: row._id,
+      fromUser: row.fromUserId, // this is populated with USER_SAFE_DATA
+    }));
 
     res.json({
       data,
